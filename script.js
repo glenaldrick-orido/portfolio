@@ -53,6 +53,24 @@ const galleryConfig = {
         { src: "images/long-quiz-dcit26.jpg", alt: "Long Quiz front page" }
     ]
 };
+const preloadedGalleryImages = new Map(
+    Object.values(galleryConfig)
+        .flat()
+        .map(({ src }) => {
+            const image = new Image();
+            image.src = src;
+            return [
+                src,
+                image.decode().then(
+                    () => image,
+                    (error) => {
+                        console.error(`Unable to load gallery image "${src}".`, error);
+                        return null;
+                    }
+                )
+            ];
+        })
+);
 const galleryPreviews = document.querySelectorAll(".gallery-preview");
 const lightbox = document.getElementById("lightbox");
 const lightboxImage = document.getElementById("lightboxImage");
@@ -62,15 +80,27 @@ const galleryNext = document.getElementById("galleryNext");
 let activeGallery = [];
 let currentImage = 0;
 let focusAfterClose = null;
+let imageRequest = 0;
 
-function showGalleryImage(index) {
+async function showGalleryImage(index) {
     if (!activeGallery.length) {
-        return;
+        return false;
     }
 
     currentImage = (index + activeGallery.length) % activeGallery.length;
-    lightboxImage.src = activeGallery[currentImage].src;
-    lightboxImage.alt = activeGallery[currentImage].alt;
+    const imageRequestId = ++imageRequest;
+    const image = activeGallery[currentImage];
+    lightboxImage.classList.add("loading");
+
+    await preloadedGalleryImages.get(image.src);
+    if (imageRequestId !== imageRequest) {
+        return false;
+    }
+
+    lightboxImage.src = image.src;
+    lightboxImage.alt = image.alt;
+    lightboxImage.classList.remove("loading");
+    return true;
 }
 
 function updateGalleryControls() {
@@ -79,16 +109,22 @@ function updateGalleryControls() {
     galleryNext.hidden = !showControls;
 }
 
-function openGallery(images, startIndex = 0) {
+async function openGallery(images, startIndex = 0, galleryTitle = "Image") {
     activeGallery = images;
     updateGalleryControls();
-    showGalleryImage(startIndex);
+    const imageLoaded = await showGalleryImage(startIndex);
+    if (!imageLoaded) {
+        return;
+    }
+
     lightbox.classList.add("open");
+    lightbox.setAttribute("aria-label", `${galleryTitle} image gallery`);
     lightbox.setAttribute("aria-hidden", "false");
     galleryClose.focus();
 }
 
 function closeGallery() {
+    imageRequest++;
     lightbox.classList.remove("open");
     lightbox.setAttribute("aria-hidden", "true");
     if (focusAfterClose) {
@@ -102,7 +138,8 @@ galleryPreviews.forEach((preview) => {
         const galleryName = preview.dataset.gallery || "quiz1";
         const galleryImages = galleryConfig[galleryName] || galleryConfig.quiz1;
         const startIndex = Number.parseInt(preview.dataset.startIndex || "0", 10);
-        openGallery(galleryImages, startIndex);
+        const galleryTitle = preview.closest(".repo-card")?.querySelector("h3")?.textContent.trim() || "Image";
+        openGallery(galleryImages, startIndex, galleryTitle);
     });
 });
 
@@ -130,6 +167,33 @@ document.addEventListener("keydown", (event) => {
 
 const backToTop = document.getElementById("backToTop");
 let previousScrollPosition = window.scrollY;
+
+const categoryButtons = document.querySelectorAll("[data-category-filter]");
+const categoryCards = document.querySelectorAll(".repo-card[data-category]");
+const categoryEmpty = document.getElementById("categoryEmpty");
+
+function filterModules(category) {
+    let visibleCards = 0;
+
+    categoryButtons.forEach((button) => {
+        const isActive = button.dataset.categoryFilter === category;
+        button.classList.toggle("active", isActive);
+        button.setAttribute("aria-pressed", String(isActive));
+    });
+
+    categoryCards.forEach((card) => {
+        const isVisible = card.dataset.category === category;
+        card.hidden = !isVisible;
+        visibleCards += Number(isVisible);
+    });
+
+    categoryEmpty.hidden = visibleCards > 0;
+}
+
+categoryButtons.forEach((button) => {
+    button.addEventListener("click", () => filterModules(button.dataset.categoryFilter));
+});
+filterModules("quiz");
 
 function updateBackToTopVisibility() {
     const currentScrollPosition = window.scrollY;

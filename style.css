@@ -279,6 +279,38 @@ h2 {
     gap: 16px;
 }
 
+.category-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: -8px 0 20px;
+}
+
+.category-button {
+    padding: 8px 14px;
+    color: var(--muted);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.category-button:hover,
+.category-button.active {
+    color: var(--text);
+    border-color: var(--accent);
+}
+
+.category-button.active {
+    background: #1f3a5a;
+}
+
+.category-empty {
+    margin: 20px 0 0;
+    color: var(--muted);
+}
+
 .repo-card {
     min-height: 170px;
     padding: 20px;
@@ -342,6 +374,10 @@ h2 {
     width: 100%;
     max-height: calc(100vh - 120px);
     object-fit: contain;
+}
+
+.lightbox-image.loading {
+    visibility: hidden;
 }
 
 .gallery-button {
@@ -442,6 +478,15 @@ h2 {
 }
 
 .contact-link {
+    padding: 10px 16px;
+    color: var(--text);
+    text-decoration: none;
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+}
+
+.category-buttons {
     padding: 10px 16px;
     color: var(--text);
     text-decoration: none;
