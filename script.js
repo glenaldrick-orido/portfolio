@@ -37,11 +37,20 @@ document.querySelectorAll(".tabs a").forEach((tab) => {
 
 const galleryConfig = {
     quiz1: [
-        { src: "quiz1-front.jpg", alt: "Quiz 1 front page" },
-        { src: "quiz1-back.jpg", alt: "Quiz 1 back page" }
+        { src: "images/quiz1-front-dcit26.jpg", alt: "Quiz 1 front page" },
+        { src: "images/quiz1-back-dcit26.jpg", alt: "Quiz 1 back page" }
     ],
     midterm: [
-        { src: "Midterm.jpg", alt: "Midterm front page" }
+        { src: "images/midterm-dcit26.jpg", alt: "Midterm front page" }
+    ],
+    quiz2: [
+        { src: "images/quiz2-dcit26.jpg", alt: "Quiz 2 front page" }
+    ],
+    quiz3: [
+        { src: "images/quiz3-dcit26.jpg", alt: "Quiz 3 front page" }
+    ],
+    longquiz: [
+        { src: "images/long-quiz-dcit26.jpg", alt: "Long Quiz front page" }
     ]
 };
 const galleryPreviews = document.querySelectorAll(".gallery-preview");
@@ -132,7 +141,7 @@ function updateBackToTopVisibility() {
 }
 
 window.addEventListener("scroll", updateBackToTopVisibility, { passive: true });
-backToTop.addEventListener("click", () => {
+backToTop.addEventListener("click", () =[>] {
     window.scrollTo({ top: 0, behavior: "smooth" });
 });
 updateBackToTopVisibility();
