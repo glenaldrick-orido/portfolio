@@ -141,7 +141,7 @@ function updateBackToTopVisibility() {
 }
 
 window.addEventListener("scroll", updateBackToTopVisibility, { passive: true });
-backToTop.addEventListener("click", () =[>] {
+backToTop.addEventListener("click", () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
 });
 updateBackToTopVisibility();
